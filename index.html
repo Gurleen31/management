@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management System</title>
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding: 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        header #branding {
+            float: left;
+        }
+        header #branding h1 {
+            margin: 0;
+        }
+        header nav {
+            float: right;
+        }
+        header .highlight, header .current a {
+            color: #e8491d;
+            font-weight: bold;
+        }
+        header a {
+            color: #ffffff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+        }
+        header ul li {
+            display: inline;
+            padding: 0 20px;
+        }
+        .main-content {
+            margin-top: 80px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #e8491d;
+            color: #ffffff;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #ff6a3c;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"],
+        .login-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .login-container input[type="submit"] {
+            background: #e8491d;
+            border: 0;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        .login-container input[type="submit"]:hover {
+            background: #ff6a3c;
+        }
+        .dashboard {
+            display: none;
+            padding: 20px;
+            background: #fff;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .dashboard h2 {
+            margin-bottom: 20px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .dashboard-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: auto;
+            max-height: 400px;
+        }
+        .dashboard-card h3 {
+            margin-bottom: 10px;
+            color: #e8491d;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        th, td {
+            padding: 6px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .project-details, .vacancy-details {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .dashboard-card button {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+        @media (max-width: 768px) {
+            header #branding,
+            header nav,
+            header nav li {
+                float: none;
+                text-align: center;
+                padding: 5px;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-card {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><span class="highlight">HR</span> Management System</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li class="current"><a href="#home">Home</a></li>
+                    <li><a href="#login">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <div id="login-selection">
+            <h2>Select Login Type</h2>
+            <button class="btn" onclick="showLogin('admin')">Admin Login</button>
+            <button class="btn" onclick="showLogin('employee')">Employee Login</button>
+        </div>
+
+        <div id="admin-login" class="login-container" style="display:none;">
+            <h2>Admin Login</h2>
+            <form onsubmit="return loginUser(event, 'admin')">
+                <input type="text" id="admin-username" placeholder="Username" required>
+                <input type="password" id="admin-password" placeholder="Password" required>
+                <input type="submit" value="Login">
+            </form>
+        </div>
+
+        <div id="employee-login" class="login-container" style="display:none;">
+            <h2>Employee Login</h2>
+            <form onsubmit="return loginUser(event, 'employee')">
+                <input type="text" id="employee-username" placeholder="Username" required>
+                <input type="password" id="employee-password" placeholder="Password" required>
+                <input type="submit" value="Login">
+            </form>
+        </div>
+
+        <div id="admin-dashboard" class="dashboard">
+            <h2>Admin Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Teams Overview</h3>
+                    <div id="teams-overview"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Vacancies</h3>
+                    <div id="vacancies"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Candidates</h3>
+                    <div id="candidates"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Campus Placements</h3>
+                    <div id="campus-placements"></div>
+                </div>
+            </div>
+            <button class="btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div id="employee-dashboard" class="dashboard">
+            <h2>Employee Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Company Vacancies</h3>
+                    <div id="employee-vacancies"></div>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Apply for Vacancy</h3>
+                    <form id="vacancy-application-form">
+                        <select id="vacancy-select" required>
+                            <option value="">Select a vacancy</option>
+                        </select>
+                        <input type="date" id="interview-date" required>
+                        <input type="submit" value="Apply" class="btn">
+                    </form>
+                </div>
+            </div>
+            <button class="btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+    // Simulated database using localStorage
+    const initializeDatabase = () => {
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify([
+                { username: 'admin', password: 'adminpass', role: 'admin' },
+                { username: 'employee', password: 'employeepass', role: 'employee' }
+            ]));
+        }
+        if (!localStorage.getItem('teams')) {
+            localStorage.setItem('teams', JSON.stringify([
+                { 
+                    name: 'Development', 
+                    members: 10, 
+                    leaves: 2, 
+                    projects: [
+                        { name: 'Project A', status: 'Ongoing', description: 'Developing a new CRM system' },
+                        { name: 'Project B', status: 'Completed', description: 'Website redesign for client X' },
+                        { name: 'Project C', status: 'Ongoing', description: 'Mobile app development for startup Y' }
+                    ], 
+                    leader: 'John Doe' 
+                },
+                { 
+                    name: 'Design', 
+                    members: 5, 
+                    leaves: 1, 
+                    projects: [
+                        { name: 'Project D', status: 'Ongoing', description: 'UI/UX design for Project A' },
+                        { name: 'Project E', status: 'Completed', description: 'Branding for client Z' }
+                    ], 
+                    leader: 'Jane Smith' 
+                }
+            ]));
+        }
+        if (!localStorage.getItem('vacancies')) {
+            localStorage.setItem('vacancies', JSON.stringify([
+                { department: 'IT', position: 'Software Developer', count: 2, description: 'Looking for experienced Java developers' },
+                { department: 'HR', position: 'Recruiter', count: 1, description: 'Seeking a recruiter with 3+ years of experience' }
+            ]));
+        }
+        if (!localStorage.getItem('candidates')) {
+            localStorage.setItem('candidates', JSON.stringify([
+                { name: 'Alice Johnson', status: 'Shortlisted', resume: 'alice_resume.pdf', appliedFor: 'Software Developer' },
+                { name: 'Bob Williams', status: 'Waitlisted', resume: 'bob_resume.pdf', appliedFor: 'Recruiter' },
+                { name: 'Charlie Brown', status: 'Rejected', resume: 'charlie_resume.pdf', appliedFor: 'Software Developer' }
+            ]));
+        }
+        if (!localStorage.getItem('campusPlacements')) {
+            localStorage.setItem('campusPlacements', JSON.stringify([
+                { campus: 'Tech University', studentsSelected: 5, details: '3 for IT, 2 for Design' },
+                { campus: 'Engineering College', studentsSelected: 3, details: '2 for IT, 1 for HR' }
+            ]));
+        }
+    };
+    
+    function showLogin(type) {
+        document.getElementById('login-selection').style.display = 'none';
+        document.getElementById(type + '-login').style.display = 'block';
+    }
+    
+    function loginUser(event, role) {
+        event.preventDefault();
+        const username = document.getElementById(role + '-username').value;
+        const password = document.getElementById(role + '-password').value;
+        const users = JSON.parse(localStorage.getItem('users'));
+        const user = users.find(u => u.username === username && u.password === password && u.role === role);
+        if (user) {
+            document.getElementById(role + '-login').style.display = 'none';
+            document.getElementById(role + '-dashboard').style.display = 'block';
+            if (role === 'admin') {
+                loadAdminDashboard();
+            } else {
+                loadEmployeeDashboard();
+            }
+        } else {
+            alert('Invalid credentials');
+        }
+    }
+    
+    function logout() {
+        document.getElementById('admin-dashboard').style.display = 'none';
+        document.getElementById('employee-dashboard').style.display = 'none';
+        document.getElementById('login-selection').style.display = 'block';
+    }
+    
+    function loadAdminDashboard() {
+        loadTeamsOverview();
+        loadVacancies();
+        loadCandidates();
+        loadCampusPlacements();
+    }
+    
+    function loadTeamsOverview() {
+        const teams = JSON.parse(localStorage.getItem('teams'));
+        let html = '<table><tr><th>Team</th><th>Members</th><th>Leaves</th><th>Projects</th><th>Leader</th><th>Details</th></tr>';
+        teams.forEach((team, index) => {
+            html += `<tr>
+                <td>${team.name}</td>
+                <td>${team.members}</td>
+                <td>${team.leaves}</td>
+                <td>${team.projects.length}</td>
+                <td>${team.leader}</td>
+                <td><button onclick="showProjectDetails(${index})">View</button></td>
+            </tr>`;
+        });
+        html += '</table>';
+        teams.forEach((team, index) => {
+            html += `<div id="project-details-${index}" class="project-details" style="display:none;">
+                <h4>${team.name} Projects</h4>
+                <ul>
+                    ${team.projects.map(project => `<li>${project.name} - ${project.status}: ${project.description}</li>`).join('')}
+                </ul>
+            </div>`;
+        });
+        document.getElementById('teams-overview').innerHTML = html;
+    }
+    
+    function showProjectDetails(teamIndex) {
+        const detailsDiv = document.getElementById(`project-details-${teamIndex}`);
+        if (detailsDiv.style.display === 'none') {
+            detailsDiv.style.display = 'block';
+        } else {
+            detailsDiv.style.display = 'none';
+        }
+    }
+    
+    function loadVacancies() {
+        const vacancies = JSON.parse(localStorage.getItem('vacancies'));
+        let html = '<table><tr><th>Department</th><th>Position</th><th>Count</th><th>Details</th></tr>';
+        vacancies.forEach((vacancy, index) => {
+            html += `<tr>
+                <td>${vacancy.department}</td>
+                <td>${vacancy.position}</td>
+                <td>${vacancy.count}</td>
+                <td><button onclick="showVacancyDetails(${index})">View Details</button></td>
+            </tr>`;
+        });
+        html += '</table>';
+        vacancies.forEach((vacancy, index) => {
+            html += `<div id="vacancy-details-${index}" class="vacancy-details" style="display:none;">
+                <h4>${vacancy.position} in ${vacancy.department}</h4>
+                <p>${vacancy.description}</p>
+            </div>`;
+        });
+        document.getElementById('vacancies').innerHTML = html;
+    }
+    
+    function showVacancyDetails(vacancyIndex) {
+        const detailsDiv = document.getElementById(`vacancy-details-${vacancyIndex}`);
+        if (detailsDiv.style.display === 'none') {
+            detailsDiv.style.display = 'block';
+        } else {
+            detailsDiv.style.display = 'none';
+        }
+    }
+    
+    function loadCandidates() {
+        const candidates = JSON.parse(localStorage.getItem('candidates'));
+        let html = '<table><tr><th>Name</th><th>Status</th><th>Applied For</th><th>Resume</th></tr>';
+        candidates.forEach(candidate => {
+            html += `<tr>
+                <td>${candidate.name}</td>
+                <td>${candidate.status}</td>
+                <td>${candidate.appliedFor}</td>
+                <td><a href="${candidate.resume}" target="_blank">View Resume</a></td>
+            </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('candidates').innerHTML = html;
+    }
+    
+    function loadCampusPlacements() {
+        const placements = JSON.parse(localStorage.getItem('campusPlacements'));
+        let html = '<table><tr><th>Campus</th><th>Students Selected</th><th>Details</th></tr>';
+        placements.forEach(placement => {
+            html += `<tr>
+                <td>${placement.campus}</td>
+                <td>${placement.studentsSelected}</td>
+                <td>${placement.details}</td>
+            </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('campus-placements').innerHTML = html;
+    }
+    
+    function loadEmployeeDashboard() {
+        const vacancies = JSON.parse(localStorage.getItem('vacancies'));
+        let html = '<table><tr><th>Department</th><th>Position</th><th>Count</th></tr>';
+        vacancies.forEach(vacancy => {
+            html += `<tr>
+                <td>${vacancy.department}</td>
+                <td>${vacancy.position}</td>
+                <td>${vacancy.count}</td>
+            </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('employee-vacancies').innerHTML = html;
+    
+        // Populate vacancy select options
+        const selectElement = document.getElementById('vacancy-select');
+        selectElement.innerHTML = '<option value="">Select a vacancy</option>';
+        vacancies.forEach((vacancy, index) => {
+            selectElement.innerHTML += `<option value="${index}">${vacancy.position} - ${vacancy.department}</option>`;
+        });
+    
+        // Set up form submission
+        document.getElementById('vacancy-application-form').onsubmit = function(event) {
+            event.preventDefault();
+            const vacancyIndex = document.getElementById('vacancy-select').value;
+            const interviewDate = document.getElementById('interview-date').value;
+            if (vacancyIndex && interviewDate) {
+                alert(`Application submitted for ${vacancies[vacancyIndex].position}. Interview scheduled for ${interviewDate}`);
+                this.reset();
+            } else {
+                alert('Please select a vacancy and interview date');
+            }
+        };
+    }
+    
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDatabase();
+        
+        // Set up login buttons
+        document.querySelector('button[onclick="showLogin(\'admin\')"]').addEventListener('click', () => showLogin('admin'));
+        document.querySelector('button[onclick="showLogin(\'employee\')"]').addEventListener('click', () => showLogin('employee'));
+        
+        // Set up login forms
+        document.querySelector('form[onsubmit="return loginUser(event, \'admin\')"]').addEventListener('submit', (event) => loginUser(event, 'admin'));
+        document.querySelector('form[onsubmit="return loginUser(event, \'employee\')"]').addEventListener('submit', (event) => loginUser(event, 'employee'));
+        
+        // Set up logout buttons
+        document.querySelectorAll('button[onclick="logout()"]').forEach(button => {
+            button.addEventListener('click', logout);
+        });
+    });
+    </script>
